@@ -4,6 +4,10 @@ OBJS = \
 	main.o \
 	exram.o
 
+LSTFILES = \
+	main.lst \
+	exram.lst
+
 CC = avr-gcc
 OBJCOPY = avr-objcopy
 
@@ -22,6 +26,7 @@ clean:
 	rm -f $(TARGET)
 	rm -f $(TARGET).map
 	rm -f $(OBJS)
+	rm -f $(LSTFILES)
 
 flash: $(TARGET).mot
 	avrdude -c $(PROGRAMMER) -p $(PARTNO) -P $(PORT) -e \
@@ -40,7 +45,9 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS)
 
 main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
+	$(CC) $(CFLAGS) -c main.c | \
+		tee main.lst
 
 exram.o: exram.S
-	$(CC) $(CFLAGS) -c exram.S
+	$(CC) $(CFLAGS) -c exram.S | \
+		tee exram.lst
